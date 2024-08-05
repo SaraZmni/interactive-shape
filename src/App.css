@@ -15,5 +15,19 @@
 .box{
   width: 80px;
   height: 80px;
+ 
+}
+.box.hidden {
+  cursor: default;
+  opacity: 0; 
+}
+
+.box.visible {
+  cursor: pointer; 
+  opacity: 1;
   border: 1px solid #ccc;
+}
+.box.selected{
+  background-color: #0bcc59;
+  cursor:not-allowed;
 }
