@@ -7,28 +7,41 @@
 
 .boxes {
   padding: 50px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  width: fit-content;
-  gap:20px;
+  /* display: grid; */
+  /* grid-template-columns: 1fr 1fr 1fr; */
+  /* width: fit-content; */
+  /* gap:20px; */
 }
-.box{
+.row {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 20px;
+  width: max-content;
+}
+.row:last-child {
+  padding: 0;
+}
+.box {
   width: 80px;
   height: 80px;
+  cursor: pointer;
   transition: background-color 0.4s ease-in-out;
- 
+  border: 1px solid #ccc;
 }
-.box.hidden {
+.box-placeholder {
+  width: 80px;
+}
+/* .box.hidden {
   cursor: default;
   opacity: 0; 
 }
 
 .box.visible {
-  cursor: pointer; 
   opacity: 1;
-  border: 1px solid #ccc;
-}
-.box.selected{
+  
+} */
+
+.box.selected {
   background-color: #0bcc59;
-  cursor:not-allowed;
+  cursor: not-allowed;
 }
