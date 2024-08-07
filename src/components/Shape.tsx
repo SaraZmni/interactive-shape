@@ -3,21 +3,25 @@ import { FC, useMemo, MouseEvent, useState, useEffect, useRef } from "react";
 type MatrisType = number[][];
 
 interface ShapeProps {
-  data: MatrisType;
+  boxes: MatrisType;
 }
 
-const Shape: FC<ShapeProps> = ({ data }) => {
+const Shape: FC<ShapeProps> = ({ boxes }) => {
   const [selected, setSelected] = useState(new Set());
   const [unloading, setUnloading] = useState(false);
   const timerRef = useRef<number | undefined>(undefined);
 
-  const boxes = useMemo(() => data.flat(Infinity) as number[], [data]);
+  /* It has some problem with other dementions of data*/
+  // const boxes = useMemo(() => data.flat(Infinity) as number[], [data]);
 
   const countOfVisibleBoxes = useMemo(() => {
-    return boxes.reduce((acc, box) => {
-      if (box === 1) {
-        acc += 1;
-      }
+    return boxes.reduce((acc, row) => {
+      row.forEach((column) => {
+        if (column === 1) {
+          acc += 1;
+        }
+      });
+
       return acc;
     }, 0);
   }, [boxes]);
@@ -26,14 +30,9 @@ const Shape: FC<ShapeProps> = ({ data }) => {
     const { target } = event;
     if (target instanceof HTMLDivElement) {
       const index = target.getAttribute("data-index");
-      const status = target.getAttribute("data-status");
+      // const status = target.getAttribute("data-status");
 
-      if (
-        index === null ||
-        status === "hidden" ||
-        selected.has(index) ||
-        unloading
-      ) {
+      if (index === null || selected.has(index) || unloading) {
         return;
       }
       setSelected((prev) => {
@@ -46,14 +45,17 @@ const Shape: FC<ShapeProps> = ({ data }) => {
   const unload = () => {
     setUnloading(true);
     const keys = Array.from(selected.keys());
+    let index = 0;
 
     const removeNextKey = () => {
-      if (keys.length) {
-        const currentKey = keys.shift();
+      if (keys[index]) {
+        // const currentKey = keys.shift();
+        const next = keys[index];
+        index += 1;
 
         setSelected((prev) => {
           const updatedKeys = new Set(prev);
-          updatedKeys.delete(currentKey);
+          updatedKeys.delete(next);
           return updatedKeys;
         });
         timerRef.current = setTimeout(removeNextKey, 500);
@@ -73,16 +75,28 @@ const Shape: FC<ShapeProps> = ({ data }) => {
 
   return (
     <div className="boxes" onClick={handleClickBoxes}>
-      {boxes.map((box, index) => {
-        const status = box === 1 ? "visible" : "hidden";
-        const isSelected = selected.has(index.toString());
+      {boxes.map((row, rowIndex) => {
+        // const status = box === 1 ? "visible" : "hidden";
+        // const isSelected = selected.has(index.toString());
         return (
-          <div
-            key={`${box}-${index}`}
-            className={`box ${status} ${isSelected ? "selected" : ""}`}
-            data-index={index}
-            data-status={status}
-          />
+          <div className="row" key={`${rowIndex}`}>
+            {row.map((column, columnIndex) => {
+              const identifier = `${rowIndex}-${columnIndex}`;
+              const isSelected = selected.has(identifier);
+
+              return column === 1 ? (
+                <div
+                  key={identifier}
+                  // className={`box ${status} ${isSelected ? "selected" : ""}`}
+                  className={`box ${isSelected ? "selected" : ""}`}
+                  data-index={identifier}
+                  // data-status={status}
+                />
+              ) : (
+                <div key={identifier} className="box-placeholder" />
+              );
+            })}
+          </div>
         );
       })}
     </div>
